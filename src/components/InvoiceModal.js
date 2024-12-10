@@ -5,51 +5,74 @@ import { BiPaperPlane, BiCloudDownload } from "react-icons/bi";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-const sendEmailWithInvoice = async (invoiceData) => {
-  const canvas = await html2canvas(document.querySelector("#invoiceCapture"));
-  const imgData = canvas.toDataURL('image/png', 1.0);
-  const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: [612, 792] });
-  const imgProps = pdf.getImageProperties(imgData);
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-  // Generate PDF blob
-  const pdfBlob = pdf.output('blob');
-
-  // Prepare FormData for API request
-  const formData = new FormData();
-  formData.append("pdf", pdfBlob, "invoice-001.pdf");
-  formData.append("invoiceData", JSON.stringify(invoiceData));
-
-  // Make API request to send email
+const sendEmailWithInvoice = async (invoiceData, closeModal) => {
   try {
-    const response = await fetch('/send-email', {
-      method: 'POST',
-      body: formData,
-    });
+    // Load logo image
+    const logoImage = new Image();
+    logoImage.src = "https://dashboard.getinvoice.co/dboard/img/logo.png";
 
-    if (response.ok) {
-      console.log("Invoice email sent successfully");
-      alert("Invoice sent successfully!");
-    } else {
-      console.error("Error sending invoice email:", response.statusText);
-      alert("Failed to send invoice. Please try again.");
-    }
+    logoImage.onload = async () => {
+      // Capture the invoice area as a canvas
+      const canvas = await html2canvas(document.querySelector("#invoiceCapture"), {
+        useCORS: true, // Ensure CORS is handled correctly for external resources
+      });
+
+      // Convert canvas to image data
+      const imgData = canvas.toDataURL("image/png", 1.0);
+
+      // Create a PDF from the image
+      const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: [612, 792] });
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      // Generate PDF blob
+      const pdfBlob = pdf.output("blob");
+
+      // Prepare FormData for API request
+      const formData = new FormData();
+      formData.append("pdf", pdfBlob, "invoice-001.pdf");
+      formData.append("invoiceData", JSON.stringify(invoiceData));
+
+      // Make API request to send email
+      const response = await fetch("/send-email", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log("Invoice email sent successfully");
+        alert("Invoice sent successfully!");
+        closeModal();
+      } else {
+        console.error("Error sending invoice email:", response.statusText);
+        alert("Failed to send invoice. Please try again.");
+      }
+    };
+
+    logoImage.onerror = () => {
+      alert("Failed to load the logo image. Please check the URL.");
+    };
   } catch (error) {
-    console.error("Network error:", error);
-    alert("Failed to send invoice due to a network error.");
+    console.error("Error occurred:", error);
+    alert("An unexpected error occurred. Please try again.");
   }
 };
 
+
 const GenerateInvoice = () => {
-  html2canvas(document.querySelector("#invoiceCapture")).then(canvas => {
+  html2canvas(document.querySelector("#invoiceCapture"), { useCORS: true }).then((canvas) => {
     const imgData = canvas.toDataURL('image/png', 1.0);
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: [612, 792] });
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    // Add the canvas image (entire invoice content, including the centered logo)
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+    // Save the PDF
     pdf.save('invoice-001.pdf');
   });
 };
@@ -57,9 +80,18 @@ const GenerateInvoice = () => {
 const InvoiceModal = ({ showModal, closeModal, info, items, currency, total, subTotal, taxAmmount, sgstAmount, cgstAmount, discountAmmount, notes }) => (
   <Modal show={showModal} onHide={closeModal} size="lg" centered>
     <div id="invoiceCapture" className="p-4 bg-light">
+      
+    <div className="d-flex flex-column text-center">
+      <div>
+      <img src="https://dashboard.getinvoice.co/dboard/img/logo.png" alt="Logo" style={{ width: '150px', height: 'auto' }} />
+      </div>
+      <div style={{  fontSize: '20px', fontWeight: 'bold', color: 'black' }}>
+        Company Name
+      </div>
+    </div>
       <div className="d-flex justify-content-between align-items-start">
         <div>
-          <h4 className="fw-bold my-2">{info.billFrom || 'John Uberbacher'}</h4>
+          <h4 className="fw-bold my-2">{info.billFrom || 'Billed to user'}</h4>
           <h6 className="fw-bold text-secondary mb-1">Invoice #: {info.invoiceNumber || ''}</h6>
         </div>
         <div className="text-end">
@@ -105,7 +137,7 @@ const InvoiceModal = ({ showModal, closeModal, info, items, currency, total, sub
           ))}
         </tbody>
       </Table>
-      <Table>
+      <Table bordered={false}>
         <tbody>
           <tr className="text-end">
             <td></td>
@@ -145,7 +177,7 @@ const InvoiceModal = ({ showModal, closeModal, info, items, currency, total, sub
     <div className="pb-4 px-4">
       <Row>
         <Col md={6}>
-          <Button variant="primary" className="d-block w-100" onClick={() => sendEmailWithInvoice({ info, items, currency, total })}>
+          <Button variant="primary" className="d-block w-100" data-bs-dismiss="modal" onClick={() => sendEmailWithInvoice({ info, items, currency, total }, closeModal)}>
             <BiPaperPlane className="me-2" /> Send Invoice
           </Button>
         </Col>

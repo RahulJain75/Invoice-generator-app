@@ -72,20 +72,13 @@ class InvoiceForm extends React.Component {
   handleCalculateTotal() {
     var items = this.state.items;
     var subTotal = 0;
-// console.log(items);
 
     const subtotal2=items.map(function(items) {
-      // subTotal = parseFloat(subTotal + (parseFloat(items.price).toFixed(2) * parseInt(items.quantity))).toFixed(2)
       subTotal = parseFloat(subTotal + (items.price * parseInt(items.quantity)));
-      // console.log(subTotal);
       
       return subTotal;
     });
  console.log(subtotal2.slice(-1));
-//  debugger;
-// const sgstAmount = parseFloat((subTotal * (this.state.taxRate / 100)).toFixed(2));
-// const cgstAmount = parseFloat((subTotal * (this.state.taxRate2 / 100)).toFixed(2));
-// const totalTaxAmount = sgstAmount + cgstAmount;
 
     this.setState({
       subTotal: parseFloat(subtotal2.slice(-1)).toFixed(2)
@@ -103,7 +96,6 @@ class InvoiceForm extends React.Component {
           discountAmmount: parseFloat(parseFloat(subTotal) * (this.state.discountRate / 100)).toFixed(2)
         }, () => {
           this.setState({
-            // total: ((subTotal - this.state.discountAmmount) + parseFloat(this.state.taxAmmount))
             total: parseFloat((subTotal - this.state.discountAmmount) + parseFloat(this.state.taxAmmount)).toFixed(2)
           });
         });
@@ -158,12 +150,29 @@ class InvoiceForm extends React.Component {
           <Card className="p-4 p-xl-5 my-3 my-xl-4">
             <div className="d-flex flex-row align-items-start justify-content-between mb-3">
               <div className="d-flex flex-column">
-              <div className="d-flex flex-column">hi this is a test line</div>
-                <div className="d-flex flex-column">
-                  <div className="mb-2">
-                    <span className="fw-bold">Current&nbsp;Date:&nbsp;</span>
-                    <span className="current-date">{new Date().toLocaleDateString()}</span>
-                  </div>
+                <div style={{ top: '20px', left: '20px' }}>
+                <img src="https://dashboard.getinvoice.co/dboard/img/logo.png" alt="Logo" style={{ width: '150px', height: 'auto' }} />
+                </div>
+                <div style={{  fontSize: '20px', fontWeight: 'bold', color: 'black' }}>
+                  Company Name
+                </div>
+              </div>
+              
+              <div className="d-flex flex-column">
+                
+                <div className="d-flex flex-row align-items-center">
+                <span className="fw-bold me-2">Invoice&nbsp;Number:&nbsp;</span>
+                <Form.Control type="number" value={this.state.invoiceNumber} name={"invoiceNumber"} onChange={(event) => this.editField(event)} min="1" style={{
+                    maxWidth: '70px'
+                  }} required="required"/>
+                </div>
+
+                
+                  <div className="d-flex flex-column">
+                    <div className="mb-2">
+                      <span className="fw-bold">Current&nbsp;Date:&nbsp;</span>
+                      <span className="current-date">{new Date().toLocaleDateString()}</span>
+                    </div>
                 </div>
                 <div className="d-flex flex-row align-items-center">
                   <span className="fw-bold d-block me-2">Due&nbsp;Date:</span>
@@ -172,19 +181,13 @@ class InvoiceForm extends React.Component {
                     }} required="required"/>
                 </div>
               </div>
-              <div className="d-flex flex-row align-items-center">
-                <span className="fw-bold me-2">Invoice&nbsp;Number:&nbsp;</span>
-                <Form.Control type="number" value={this.state.invoiceNumber} name={"invoiceNumber"} onChange={(event) => this.editField(event)} min="1" style={{
-                    maxWidth: '70px'
-                  }} required="required"/>
-              </div>
             </div>
             <hr className="my-4"/>
             <Row className="mb-5">
               <Col>
                 <Form.Label className="fw-bold">Bill to:</Form.Label>
                 <Form.Control placeholder={"Who is this invoice to?"} rows={3} value={this.state.billTo} type="text" name="billTo" className="my-2" onChange={(event) => this.editField(event)} autoComplete="name" required="required"/>
-                <Form.Control placeholder={"Email address"} value={this.state.billToEmail} type="email" name="billToEmail" className="my-2" onChange={(event) => this.editField(event)} autoComplete="email" required="required"/>
+                <Form.Control placeholder={"Email address"} value={this.state.billToEmail} type="email" name="billToEmail" className="my-2" onChange={(event) => this.editField(event)} autoComplete="email" required/>
                 <Form.Control placeholder={"Billing address"} value={this.state.billToAddress} type="text" name="billToAddress" className="my-2" autoComplete="address" onChange={(event) => this.editField(event)} required="required"/>
               </Col>
               <Col>
