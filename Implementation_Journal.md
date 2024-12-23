@@ -6,6 +6,7 @@
 - [Step 1: Adding a Company Logo](#step-1-adding-a-company-logo)
 - [Step 2: Implementing the Add Item Button](#step-2-implementing-the-add-item-button)
 - [Step 3: Adding SGST Option](#step-3-adding-sgst-option)
+- [Step 3: Adding SGST Option](#step-3-adding-sgst-option)
 - [Conclusion](#conclusion)
 
 ---
