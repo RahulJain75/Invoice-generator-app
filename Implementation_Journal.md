@@ -6,7 +6,7 @@
 - [Step 1: Adding a Company Logo](#step-1-adding-a-company-logo)
 - [Step 2: Implementing the Add Item Button](#step-2-implementing-the-add-item-button)
 - [Step 3: Adding SGST Option](#step-3-adding-sgst-option)
-- [Step 3: Adding SGST Option](#step-3-adding-sgst-option)
+- [Step 3: Adding CGST Option](#step-4-adding-cgst-option)
 - [Conclusion](#conclusion)
 
 ---
@@ -16,6 +16,7 @@ This journal documents the steps taken to implement three features in the applic
 1. Adding a company logo to enhance branding.
 2. Creating a functional Add Item button using JavaScript.
 3. Introducing an SGST (State Goods and Services Tax) option in the app for better tax calculation.
+4. Introducing an CGST (Central Goods and Services Tax) option in the app for better tax calculation.
 
 These features were added to improve the application's usability and professional appearance.
 
@@ -25,6 +26,7 @@ These features were added to improve the application's usability and professiona
 1. **Company Logo:** Enhances the app's visual identity and professional appeal.
 2. **Add Item Button:** Provides functionality for users to add new items dynamically.
 3. **SGST Option:** Facilitates accurate tax calculation, aligning the app with user requirements and compliance.
+4. **CGST Option:** Facilitates accurate tax calculation, aligning the app with user requirements and compliance.
 
 ---
 
@@ -146,11 +148,45 @@ These features were added to improve the application's usability and professiona
 **Why:** Adding an SGST option ensures compliance with tax requirements and makes the app more functional for business use.
 
 ---
+## Step 3: Adding CGST Option
+
+### Task:
+- Introduce an CGST option in the application for tax calculations.
+
+### Steps to Implement:
+
+1. **Add HTML for the SGST Option:**
+   - Insert this code in the HTML file:
+     ```html
+     <div class="tax-section">
+         <label for="cgst">CGST (%):</label>
+         <input type="number" id="cgst" value="9" min="0" max="100">
+     </div>
+     ```
+
+2. **Integrate JavaScript for CGST Calculations:**
+   - Add this functionality in the script:
+     ```javascript
+     document.getElementById('cgst').addEventListener('input', function() {
+         const cgstValue = parseFloat(this.value);
+
+         if (isNaN(cgstValue) || cgstValue < 0 || cgstValue > 100) {
+             alert('Please enter a valid CGST percentage (0-100).');
+         } else {
+             console.log(`CGST is set to: ${cgstValue}%`);
+         }
+     });
+     ```
+
+**Why:** Adding an CGST option ensures compliance with tax requirements and makes the app more functional for business use.
+
+---
 
 ## Conclusion
 In this implementation journal, we successfully:
 1. Added a visually appealing company logo.
 2. Developed a functional Add Item button to enhance interactivity.
 3. Integrated an SGST option to improve tax calculation capabilities.
+4. Integrated an CGST option to improve tax calculation capabilities.
 
 These features collectively improved the application’s usability and visual appeal, aligning with user needs and expectations.
